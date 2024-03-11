@@ -33,7 +33,7 @@ namespace CoreAdvanceConcepts.Controllers
             if (responce.IsSuccess)
                 return Ok(responce);
             else
-                return NotFound(responce);
+                return BadRequest(responce);
         }
       
         [HttpGet("{id}")]
@@ -49,7 +49,7 @@ namespace CoreAdvanceConcepts.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> EditEmployee(int id, Employee employee)
+        public async Task<ActionResult<Employee>> EditEmployee(int id, Employee employee)
         {
             var responce = await _employeeService.EditEmployeeAsync(id, employee);
             if (responce.IsSuccess)
@@ -66,7 +66,7 @@ namespace CoreAdvanceConcepts.Controllers
             var responce = await _employeeService.CreateEmployeeAsync(employee);
             if (responce.IsSuccess)
             {
-                return Ok(responce);
+                return CreatedAtAction("CreateEmployee", responce);
             }
             else
                 return BadRequest(responce);

@@ -28,10 +28,9 @@ namespace CoreAdvanceConcepts.Services
             ResponceMessage<Employee> response = new ResponceMessage<Employee>();
             try
             {
-                ResponceMessage<Employee>? employee = await GetEmployeeByIdAsync(id);
-                if (employee == null)
+                ResponceMessage<Employee>? employee = await _employeeRepository.GetDataById(x => x.EmployeeId == id && !x.FlagDeleted);
+                if (employee == null || employee.Data == null || employee.Data.FlagDeleted)
                 {
-                    response.IsSuccess = false;
                     response.Message = $"Employee with ID {id} not found";
                     return response;
                 }
@@ -39,7 +38,7 @@ namespace CoreAdvanceConcepts.Services
                 {
                     employee.Data.FlagDeleted = true;
                     employee.Data.UpdatedDate = DateTime.Now;
-                    response = await _employeeRepository.DeleteData(employee.Data);                    
+                    response = await _employeeRepository.DeleteData(employee.Data);
                 }
             }
             catch (Exception ex)
@@ -56,17 +55,17 @@ namespace CoreAdvanceConcepts.Services
             ResponceMessage<Employee> response = new ResponceMessage<Employee>();
             try
             {
-                ResponceMessage<Employee>? newEmployee = await GetEmployeeByIdAsync(id);
+                ResponceMessage<Employee>? newEmployee = await _employeeRepository.GetDataById(x => x.EmployeeId == id && !x.FlagDeleted);
+                response.IsSuccess = true;
                 if (id != employee.EmployeeId)
-                {
-                    response.IsSuccess = false;
+                {                    
                     response.Message = $"{id} and Employee Id: {employee.EmployeeId} does not match";
                     return response;
                 }
-                else if (employee == null)
+                else if(newEmployee.Data == null || newEmployee.Data.FlagDeleted)
                 {
-                    response.IsSuccess = false;
-                    response.Message = $"Employee with {id} not found";
+                    response.Message = $"Employee with ID {id} not found";
+                    return response;
                 }
                 else
                 {
@@ -82,7 +81,7 @@ namespace CoreAdvanceConcepts.Services
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.Message = "An error occurred while deleting the employee.";
+                response.Message = "An error occurred while editing the employee.";
                 response.ErrorMessage = new List<string> { ex.Message };
             }
             return response;
@@ -90,18 +89,14 @@ namespace CoreAdvanceConcepts.Services
 
         public async Task<ResponceMessage<Employee>> GetEmployeeByIdAsync(int id)
         {
-            ResponceMessage<Employee> response = new ResponceMessage<Employee>();
-            var employeeList = await _employeeRepository.GetDataList();
+            ResponceMessage<Employee> response = new ResponceMessage<Employee>();            
             try
             {
-                var employee = employeeList.Data.FirstOrDefault(x => !x.FlagDeleted && x.EmployeeId == id);
-                response.IsSuccess = true;
-                response.Data = employee;
-                if (employee == null)
+                response = await _employeeRepository.GetDataById(x => x.EmployeeId == id && !x.FlagDeleted);
+                if (response.IsSuccess && (response.Data == null || response.Data.FlagDeleted))
                 {
-                    response.IsSuccess = false;
                     response.Message = $"No employee found with Id: {id}";
-                }
+                }               
             }
             catch (Exception ex)
             {
@@ -110,24 +105,28 @@ namespace CoreAdvanceConcepts.Services
                 response.ErrorMessage = new List<string> { ex.Message };
             }
             return response;
-
         }
 
         public async Task<ResponceMessage<IEnumerable<Employee>>> GetEmployeesAsync()
         {
-            ResponceMessage<IEnumerable<Employee>> response = new ResponceMessage<IEnumerable<Employee>> ();
-            var employeeList = await _employeeRepository.GetDataList();
+            ResponceMessage<IEnumerable<Employee>> response = new ResponceMessage<IEnumerable<Employee>> ();            
             try
             {
-                var employee = employeeList.Data.Where(x => !x.FlagDeleted).ToList();
-                response.IsSuccess = true;
-                response.Data = employee;
-                response.DataCount = employee.Count;
-                if (employee == null)
+                ResponceMessage<IEnumerable<Employee>> responseEmployeeList = await _employeeRepository.GetDataList();
+                if(responseEmployeeList.IsSuccess && responseEmployeeList.Data != null)
                 {
-                    response.IsSuccess = false;
-                    response.Message = $"No employees found";
+                    var employee = responseEmployeeList.Data.Where(x => !x.FlagDeleted).ToList();                    
+                    if (employee.Count == 0)
+                    {
+                        response.Message = $"No employees found";
+                    }
+                    else
+                    {
+                        response.Data = employee;
+                        response.DataCount = employee.Count;
+                    }
                 }
+                response.IsSuccess = true;
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
-﻿using CoreAdvanceConcepts.Caching;
+﻿using Azure;
+using CoreAdvanceConcepts.Caching;
 using CoreAdvanceConcepts.DataContext;
 using CoreAdvanceConcepts.Interface;
 using CoreAdvanceConcepts.Models;
@@ -6,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using static Dapper.SqlMapper;
 
 namespace CoreAdvanceConcepts.Repository
 {
@@ -89,6 +92,36 @@ namespace CoreAdvanceConcepts.Repository
             return responce;
         }
 
+        public async Task<ResponceMessage<TEntity>> GetDataById(Expression<Func<TEntity, bool>> predicate)
+        {
+            ResponceMessage<TEntity> responce = new ResponceMessage<TEntity>();
+            try
+            {
+                TEntity employee = null;
+                var cachedData = await _cacheService.GetAsync<IEnumerable<TEntity>>(cacheKey);
+                if (cachedData == null)
+                {
+                    employee = _entities.FirstOrDefault(predicate.Compile());
+                }
+                else
+                {
+                    employee = cachedData.FirstOrDefault(predicate.Compile());
+                }
+                responce.IsSuccess = true;
+                if(employee != null)
+                {
+                    responce.Data = employee;
+                }                
+            }
+            catch(Exception ex)
+            {
+                responce.IsSuccess = false;
+                responce.Message = "An error occurred while fetching entities.";
+                responce.ErrorMessage = new List<string> { ex.Message };
+            }
+            return responce;
+        }
+
         public async Task<ResponceMessage<IEnumerable<TEntity>>> GetDataList()
         {
             ResponceMessage<IEnumerable<TEntity>> response = new ResponceMessage<IEnumerable<TEntity>>();
@@ -99,7 +132,7 @@ namespace CoreAdvanceConcepts.Repository
                 {
                     cachedData = await _entities.ToListAsync();
                     await _cacheService.SetAsync(cacheKey, cachedData, TimeSpan.FromMinutes(10));
-                }                
+                }
                 response.IsSuccess = true;
                 response.DataCount = cachedData.Count();
                 response.Data = cachedData;

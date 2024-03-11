@@ -1,5 +1,6 @@
 ﻿using CoreAdvanceConcepts.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace CoreAdvanceConcepts.Interface
 {
@@ -9,5 +10,6 @@ namespace CoreAdvanceConcepts.Interface
         Task<ResponceMessage<TEntity>> EditData(TEntity entity);
         Task<ResponceMessage<TEntity>> CreateData(TEntity entity);
         Task<ResponceMessage<TEntity>> DeleteData(TEntity entity);
+        Task<ResponceMessage<TEntity>> GetDataById(Expression<Func<TEntity, bool>> predicate);
     }
 }
