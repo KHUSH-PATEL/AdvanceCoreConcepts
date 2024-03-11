@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreAdvanceConcepts", "CoreAdvanceConcepts\CoreAdvanceConcepts.csproj", "{D1572F58-6D86-456A-9D47-FDC06CB7A3F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreAdvanceConcepts.Test", "CoreAdvanceConcepts.Test\CoreAdvanceConcepts.Test.csproj", "{5F5FE7BF-1315-442D-9790-8CB0E40BC839}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreAdvanceConcepts.xUnitTest", "CoreAdvanceConcepts.Test\CoreAdvanceConcepts.xUnitTest.csproj", "{5F5FE7BF-1315-442D-9790-8CB0E40BC839}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
