@@ -58,12 +58,14 @@ namespace CoreAdvanceConcepts.Services
                 ResponceMessage<Employee>? newEmployee = await _employeeRepository.GetDataById(x => x.EmployeeId == id && !x.FlagDeleted);
                 response.IsSuccess = true;
                 if (id != employee.EmployeeId)
-                {                    
+                {
+                    response.IsSuccess = false;
                     response.Message = $"{id} and Employee Id: {employee.EmployeeId} does not match";
                     return response;
                 }
                 else if(newEmployee.Data == null || newEmployee.Data.FlagDeleted)
                 {
+                    response.IsSuccess = false;
                     response.Message = $"Employee with ID {id} not found";
                     return response;
                 }

@@ -196,6 +196,97 @@ namespace CoreAdvanceConcepts.Test.Services
             mockEmployeeRepository.Verify(x => x.GetDataById(It.IsAny<Expression<Func<Employee, bool>>>()), Times.Once);
         }
 
+        [Theory]
+        [InlineData(1)]
+        [InlineData(3)]
+        [InlineData(10)]
+        public async Task EditEmployeeAsync_IdDoesNotMatchEmployeeId_ReturnsErrorMessage(int id)
+        {
+            // Arrange
+            Employee employee = new Employee
+            {
+                EmployeeId = 2,
+                FullName = "John Doe"                
+            };
+            string responceMessage = $"{id} and Employee Id: {employee.EmployeeId} does not match";
+            // Act
+            var result = await employeeServices.EditEmployeeAsync(id, employee);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+            Assert.Equal(responceMessage, result.Message);
+            mockEmployeeRepository.Verify(x => x.GetDataById(It.IsAny<Expression<Func<Employee, bool>>>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task EditEmployeeAsync_FlagDeletedIsTrue_ReturnsErrorMessage()
+        {
+            // Arrange
+            int id = 2;
+            string responceMessage = $"Employee with ID {id} not found";
+            Employee employee = new Employee
+            {
+                EmployeeId = 2,
+                FullName = "John Doe",
+            };
+            var response = new ResponceMessage<Employee>
+            {
+                IsSuccess = true,
+                Data = GetTestEmployees().FirstOrDefault(x => x.EmployeeId == 2),
+                Message = responceMessage
+            };
+
+            mockEmployeeRepository.Setup(x => x.GetDataById(It.IsAny<Expression<Func<Employee, bool>>>()))
+                                   .ReturnsAsync(response);
+
+            // Act
+            var result = await employeeServices.EditEmployeeAsync(id, employee);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+            Assert.Equal($"Employee with ID {id} not found", result.Message);
+            mockEmployeeRepository.Verify(x => x.GetDataById(It.IsAny<Expression<Func<Employee, bool>>>()), Times.Once);
+            mockEmployeeRepository.VerifyNoOtherCalls(); // Ensure no other methods on repository were called
+        }
+
+        [Fact]
+        public async Task EditEmployeeAsync_SuccessfullyEditsData_ReturnsSuccessMessage()
+        {
+            // Arrange
+            int id = 1;
+            Employee employee = new Employee
+            {
+                EmployeeId = id,
+                FullName = "John Doe",
+            };
+            var employeeResponce = new ResponceMessage<Employee>
+            {
+                IsSuccess = true,
+                Data = GetTestEmployees().FirstOrDefault(x => x.EmployeeId == id)
+            };
+            var response = new ResponceMessage<Employee>
+            {
+                IsSuccess = true,
+                Data = employee
+            };
+
+            mockEmployeeRepository.Setup(x => x.GetDataById(It.IsAny<Expression<Func<Employee, bool>>>()))
+                                   .ReturnsAsync(employeeResponce);
+            mockEmployeeRepository.Setup(x => x.EditData(It.IsAny<Employee>()))
+                                   .ReturnsAsync(response);
+
+            // Act
+            var result = await employeeServices.EditEmployeeAsync(id, employee);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.Equal(employee.FullName, response.Data.FullName);
+            mockEmployeeRepository.Verify(x => x.GetDataById(It.IsAny<Expression<Func<Employee, bool>>>()), Times.Once);
+            mockEmployeeRepository.Verify(x => x.EditData(It.IsAny<Employee>()), Times.Once);
+            mockEmployeeRepository.VerifyNoOtherCalls();
+        }
+
+
 
         public List<Employee> GetTestEmployees()
         {
