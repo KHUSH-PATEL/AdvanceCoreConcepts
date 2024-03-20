@@ -97,7 +97,7 @@ namespace CoreAdvanceConcepts.Repository
             ResponceMessage<TEntity> responce = new ResponceMessage<TEntity>();
             try
             {
-                TEntity employee = null;
+                TEntity? employee = null;
                 var cachedData = await _cacheService.GetAsync<IEnumerable<TEntity>>(cacheKey);
                 if (cachedData == null)
                 {

@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreAdvanceConcepts", "Core
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreAdvanceConcepts.xUnitTest", "CoreAdvanceConcepts.Test\CoreAdvanceConcepts.xUnitTest.csproj", "{5F5FE7BF-1315-442D-9790-8CB0E40BC839}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreAdvanceConcepts.nUnitTests", "CoreAdvanceConcepts.nUnitTests\CoreAdvanceConcepts.nUnitTests.csproj", "{6D35B02C-ABD2-4E28-818C-EB3B0464F806}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5F5FE7BF-1315-442D-9790-8CB0E40BC839}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F5FE7BF-1315-442D-9790-8CB0E40BC839}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F5FE7BF-1315-442D-9790-8CB0E40BC839}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D35B02C-ABD2-4E28-818C-EB3B0464F806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D35B02C-ABD2-4E28-818C-EB3B0464F806}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D35B02C-ABD2-4E28-818C-EB3B0464F806}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D35B02C-ABD2-4E28-818C-EB3B0464F806}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
