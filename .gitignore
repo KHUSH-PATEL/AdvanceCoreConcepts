@@ -1,0 +1,12 @@
+# Ignore compiled binaries
+CoreAdvanceConcepts/bin/
+CoreAdvanceConcepts.Test/bin/
+
+# Ignore log files
+CoreAdvanceConcepts/Logs/
+
+# Ignore object files
+CoreAdvanceConcepts/obj/
+CoreAdvanceConcepts.Test/obj/
+
+.vs/
